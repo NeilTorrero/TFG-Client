@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import socketIOClient from "socket.io-client";
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
 }
 
 function ChatRoom() {
+  // const roomdID = 'test';
+
+  //const { msgio, sendMsgIO} = useChat(roomdID);
   const DUMMY_DATA = [
     {
       sender: "user",
@@ -35,7 +39,7 @@ function ChatRoom() {
 
   var messID = 2;
 
-  const [messages, setMessages] = useState(DUMMY_DATA);
+  const [messages, setMessages] = useState([]);
 
   const [formValue, setFormValue] = useState('');
 
@@ -76,6 +80,7 @@ function ChatRoom() {
       }
       setMessages(aux);
     })
+    //sendMsgIO(formValue);
 
     setFormValue('');
     dummy.current.scrollIntoView({ behavior: 'smooth' });
@@ -114,4 +119,33 @@ function ChatMessage(props) {
   </>)
 }
 
+/*
+const useChat = (roomID) => {
+  const [messages, setMessages] = useState([]);
+  const socketRef = useRef();
+
+  useEffect(() => {
+    socketRef.current = socketIOClient("http://localhost:5005", {query: {roomID},});
+
+    socketRef.current.on('bot_uttered', (message) => {
+      const incomingMessage = {
+        ...message,
+      };
+      setMessages((messages) => [...messages, incomingMessage]);
+    })
+    return () => {
+      socketRef.current.disconnect();
+    }
+  }, [roomID]);
+
+  const sendMsgIO = (messageBody) => {
+    socketRef.current.emit('user_uttered', {
+      text: messageBody,
+    });
+
+  };
+
+  return {messages, sendMsgIO}
+};
+*/
 export default App;
