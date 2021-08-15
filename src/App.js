@@ -18,7 +18,7 @@ function App() {
 
 function ChatRoom() {
   const session_id = '623a79b5454f433da729d357381fa307';
-  var [ messID, setMessID ] = useState(0);
+  const [ messID, setMessID ] = useState(0);
   const socketRef = useRef();
   
   const DUMMY_DATA = [
@@ -35,6 +35,7 @@ function ChatRoom() {
   ];
   const dummy = useRef();
   const [ messages, setMessages ] = useState([]);
+  const lastestMessages = useRef(messages);
   const [formValue, setFormValue] = useState('');
 
 
@@ -51,8 +52,8 @@ function ChatRoom() {
     }*/
     socketRef.current.on('bot_uttered', (message) => {
       console.log('before bot: ');
-      console.log(messages);
-      let temp = messages;
+      console.log(lastestMessages.current);
+      let temp = lastestMessages.current;
       temp.push({
         sender: "bot",
         text: message.text,
@@ -68,9 +69,11 @@ function ChatRoom() {
         payload: message.payload,
         id: messID
       }));*/
-      setMessID(messID++);
+      let ntemp = messID+1;
+      setMessID(ntemp);
       console.log('after bot: ');
       console.log(messages);
+      dummy.current.scrollIntoView({ behavior: 'smooth' });
     });
     
     return () => {
@@ -102,32 +105,11 @@ function ChatRoom() {
       id: messID
     });
     setMessages([...temp]);
-
-    /*fetch('http://localhost:5005/webhooks/rest/webhook',
-      {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sender: "user",
-          message: formValue,
-        })
-      }
-    ).then(res => res.json()).then(response => {
-      console.log(response)
-      for (let index = 0; index < response.length; index++) {
-        aux = aux.concat({
-          sender: "bot",
-          text: response[index].text,
-          image: response[index].image,
-
-          id: messID++
-        })
-        
-      }
-      setMessages(aux);
-    })*/
+    let ntemp = messID+1;
+    setMessID(ntemp);
     console.log('user sends');
     console.log(messages);
+    lastestMessages.current = messages;
     sendMessage(formValue);
     setFormValue('');
     dummy.current.scrollIntoView({ behavior: 'smooth' });
