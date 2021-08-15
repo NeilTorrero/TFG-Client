@@ -53,18 +53,16 @@ function ChatRoom() {
     }*/
     socketRef.current.on('bot_uttered', (message) => {
       let temp = lastestMessages.current;
+      let ntemp = messidRef.current;
+      setMessID(ntemp+1);
       temp.push({
         sender: "bot",
         text: message.text,
         type: message.attachment != undefined ? message.attachment.type : undefined,
         payload: message.attachment != undefined ? message.attachment.payload.src : undefined,
-        id: messID
+        id: ntemp
       });
       setMessages([...temp]);
-
-      let ntemp = messidRef.current+1;
-      setMessID(ntemp);
-      console.log(temp);
 
       dummy.current.scrollIntoView({ behavior: 'smooth' });
     });
@@ -85,7 +83,6 @@ function ChatRoom() {
 
   const handleMessage = async(e)=> {
     e.preventDefault();
-
     let temp = messages;
     temp.push({
       sender: "user",
@@ -95,9 +92,9 @@ function ChatRoom() {
     setMessages([...temp]);
     let ntemp = messID+1;
     setMessID(ntemp);
-
-    lastestMessages.current = messages;
     messidRef.current = ntemp;
+    lastestMessages.current = messages;
+    
     sendMessage(formValue);
     setFormValue('');
     dummy.current.scrollIntoView({ behavior: 'smooth' });
