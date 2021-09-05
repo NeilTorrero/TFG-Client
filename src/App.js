@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import './App.css';
 import socketIOClient from "socket.io-client";
+import MicRecorder from 'mic-recorder-to-mp3';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
 }
 
 function ChatRoom() {
+  const Mp3Recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
   const session_id = '623a79b5454f433da729d357381fa307';
   const [ messID, setMessID ] = useState(0);
   const messidRef = useRef(messID);
@@ -41,7 +43,7 @@ function ChatRoom() {
 
 
   useEffect(() => {
-    socketRef.current = socketIOClient("http://localhost:5005", {query: {session_id},});
+    socketRef.current = socketIOClient(/*"http://localhost:5005"*/ "https://7321-95-61-100-85.ngrok.io", {query: {session_id},});
     
     /*{
       "attachment": {
@@ -100,6 +102,23 @@ function ChatRoom() {
     dummy.current.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const [ recording, setRecordState ] = useState(false);
+  const record = () => {
+    if (!recording) {
+      Mp3Recorder.start().then(() => {
+        setRecordState(true);
+      }).catch((e) => console.error(e));
+    } else {
+      Mp3Recorder.stop().getMp3().then(([buffer, blob]) => {
+        const file = new File(buffer, 'recording.mp3', {type: blob.type, lastModified: Date.now()})
+        const player = new Audio(URL.createObjectURL(file));
+        player.play();
+        setRecordState(false);
+      }).catch((e) => console.log(e));
+    }
+    console.log("Record");
+  }
+
   return (
     <>
     <main>
@@ -109,8 +128,8 @@ function ChatRoom() {
         </div>
     </main>
       <form onSubmit={handleMessage}>
-        <input value={formValue} onChange={(e) => setFormValue(e.target.value)}></input>
-
+        <input name="send" value={formValue} onChange={(e) => setFormValue(e.target.value)}></input>
+        <button type="button" onClick={record}>{recording ? "Stop" : "Record"}</button>
         <button type="submit">Send</button>
       </form>
     </>
