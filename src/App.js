@@ -43,7 +43,7 @@ function ChatRoom() {
 
 
   useEffect(() => {
-    socketRef.current = socketIOClient(/*"http://localhost:5005"*/ "https://7321-95-61-100-85.ngrok.io", {query: {session_id},});
+    socketRef.current = socketIOClient(/*"http://localhost:5005"*/ "https://2b10-81-60-169-254.ngrok.io", {query: {session_id},});
     
     /*{
       "attachment": {
@@ -68,7 +68,14 @@ function ChatRoom() {
 
       dummy.current.scrollIntoView({ behavior: 'smooth' });
       const speaker = new SpeechSynthesisUtterance();
-      speaker.lang = 'en-US';
+      const synth = window.speechSynthesis;
+      const voices = synth.getVoices();
+      if ((navigator.userAgent.indexOf("Safari") != -1) || (navigator.userAgent.indexOf("Chrome") != -1)) {
+        console.log(voices);
+        speaker.voice = voices[33];
+      } else {
+        speaker.lang = 'en-US';
+      }
       speaker.text = message.text;
       speechSynthesis.speak(speaker);
     });
@@ -125,7 +132,7 @@ function ChatRoom() {
             body: file
           }
         ).then(res => res.json()).then(response => {
-          setFormValue(response['text'].toLowerCase())
+          setFormValue(response['text'] != undefined ? response['text'].toLowerCase(): "")
           console.log(response)
         });
         setRecordState(false);
