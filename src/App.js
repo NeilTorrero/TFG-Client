@@ -67,6 +67,10 @@ function ChatRoom() {
       setMessages([...temp]);
 
       dummy.current.scrollIntoView({ behavior: 'smooth' });
+      const speaker = new SpeechSynthesisUtterance();
+      speaker.lang = 'en-US';
+      speaker.text = message.text;
+      speechSynthesis.speak(speaker);
     });
     
     return () => {
