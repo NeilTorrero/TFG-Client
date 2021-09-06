@@ -111,8 +111,19 @@ function ChatRoom() {
     } else {
       Mp3Recorder.stop().getMp3().then(([buffer, blob]) => {
         const file = new File(buffer, 'recording.mp3', {type: blob.type, lastModified: Date.now()})
-        const player = new Audio(URL.createObjectURL(file));
-        player.play();
+        // const player = new Audio(URL.createObjectURL(file));
+        // player.play();
+        // alternative to huggingface https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API
+        fetch("https://api-inference.huggingface.co/models/facebook/wav2vec2-base-960h",
+          {
+            method: "POST",
+            headers: { 'Authorization': `Bearer api_AZSUExoImMlclNUttjtTGKtuoGoqJIkEEm` },
+            body: file
+          }
+        ).then(res => res.json()).then(response => {
+          setFormValue(response['text'].toLowerCase())
+          console.log(response)
+        });
         setRecordState(false);
       }).catch((e) => console.log(e));
     }
