@@ -19,7 +19,7 @@ function App() {
 
 function ChatRoom() {
   const Mp3Recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
-  const session_id = '623a79b5454f433da729d357381fa307';
+  const session_id = '';
   const [ messID, setMessID ] = useState(0);
   const messidRef = useRef(messID);
   const socketRef = useRef();
@@ -128,7 +128,7 @@ function ChatRoom() {
         fetch("https://api-inference.huggingface.co/models/facebook/wav2vec2-base-960h",
           {
             method: "POST",
-            headers: { 'Authorization': `Bearer api_AZSUExoImMlclNUttjtTGKtuoGoqJIkEEm` },
+            headers: { 'Authorization': `` },
             body: file
           }
         ).then(res => res.json()).then(response => {
